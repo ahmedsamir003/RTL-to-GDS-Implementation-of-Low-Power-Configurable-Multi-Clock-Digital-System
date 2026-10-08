@@ -1,0 +1,2 @@
+waive -msg {Port coverage for top design unit 'system_top' is: '2' (50.00 %) port(s) not fully constrained}  -rule {  {Setup_port01}  }  -comment {Created by ICer on 23-Sep-2026 16:15:20 Reset is partially constrainted}  -exact 
+waive -msg {Port coverage for top design unit 'system_top' is: '2' (50.00 %) port(s) not fully constrained}  -rule {  {Setup_port01}  }  -comment {Created by ICer on 23-Sep-2026 16:15:20 Reset is partially constrainted}  -exact 

@@ -1,0 +1,64 @@
+
+current_design system_top
+
+##sdc_data -file /home/ICer/Labs/System_Final/Synthesis/sdc/system_top.sdc
+
+####################################################################################
+#                 #### Section 1 : Clock Definition ####
+#################################################################################### 
+
+# Primary Clocks
+clock -name "REF_CLK"  -period 20.0	-edge {0 10.0}   -domain d0
+clock -name "UART_CLK" -period 271.3	-edge {0 135.65} -domain d1
+
+# Generated Nets (Forced as synchronous primary clocks to bypass tracing errors)
+# Assigning them to the parent domains (d0 and d1) ensures CDC treats them as synchronous.
+clock -name "system_top.ALU_CLK"     -period 20.0    -edge {0 10.0}       -domain d0
+clock -name "system_top.UART_RX_CLK" -period 271.3   -edge {0 135.65}     -domain d1
+clock -name "system_top.UART_TX_CLK" -period 8681.6  -edge {0 4340.8}     -domain d1
+
+####################################################################################
+                  #### Section 2 : Reset Definition ####
+####################################################################################
+
+reset -name "RST_N" -value 0 -async
+
+####################################################################################
+             #### Section 3 : set input/output clock domains  ####
+####################################################################################
+
+
+####################################################################################
+             #### Section 4 : Quasi static signals  ####
+####################################################################################
+
+quasi_static -name "system_top.U0_RegFile.REG2"
+quasi_static -name "system_top.U0_RegFile.REG3"
+
+####################################################################################
+             #### Section 5 : set_case_analysis  ####
+####################################################################################
+
+#set_case_analysis -name top.out_reg0[1] -value 1
+#set_case_analysis -name top.out_reg0[2] -value 1
+#set_case_analysis -name top.out_reg0[3] -value 1
+
+####################################################################################
+             #### Section 6 : DATA/RESET Synchronizers  ####
+####################################################################################
+
+reset_synchronizer -name "system_top.U0_RST_SYNC.sync_rst"
+reset_synchronizer -name "system_top.U1_RST_SYNC.sync_rst"
+
+sync_cell          -name "Data_Sync"
+sync_cell          -name "DF_Sync"
+
+####################################################################################
+             #### Section 7 : Constraints  ####
+####################################################################################
+#cdc_attribute -unrelated  {top.u_async_fifo.gray_rd_ptr 	top.ctrl_mult_start}
+
+cdc_attribute -unrelated  {system_top.U0_UART_FIFO.rptr_gray	system_top.U0_ref_sync.bus_enable	system_top.U0_ref_sync.unsync_bus}
+
+fifo -memory "system_top.U0_UART_FIFO.u_fifo_mem.FIFO_MEM"
+
