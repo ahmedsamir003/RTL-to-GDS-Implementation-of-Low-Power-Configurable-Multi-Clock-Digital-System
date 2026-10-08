@@ -1,5 +1,10 @@
 # RTL-to-GDSII Implementation of a Low-Power Configurable Multi-Clock Digital System
 
+## Final Routed layout
+<img width="778" height="715" alt="encounter final" src="https://github.com/user-attachments/assets/2fcc8f56-a582-4e5e-a63e-c7afcf76b601" />
+
+
+
 A UART-controlled digital system implemented in Verilog/SystemVerilog and taken through synthesis, scan DFT, formal equivalence, physical implementation, gate-level functional simulation, and GDSII export using a **TSMC 130 nm standard-cell technology**.
 
 This repository documents the work completed at each stage, including the RTL, tool scripts, netlists, verification outputs, timing reports, and physical-design exports.
@@ -19,6 +24,7 @@ This repository documents the work completed at each stage, including the RTL, t
 ## System Overview
 
 The system receives commands through UART, performs register-file or ALU operations, and returns the requested data through UART. Computation and serial communication operate in separate clock domains.
+<img width="1236" height="739" alt="Untitled" src="https://github.com/user-attachments/assets/83028a6d-f97a-4c7f-b723-af689efa1b02" />
 
 ### Implemented features
 
