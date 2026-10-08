@@ -1,0 +1,38 @@
+****************************************
+Report : Time Based Power (Cycle Accurate)
+Design : SYS_TOP
+Version: O-2018.06-SP1
+Date   : Thu Oct  8 20:57:00 2026
+****************************************
+
+
+
+  Attributes
+  ----------
+      i  -  Including register clock pin internal power
+      u  -  User defined power group
+
+                        Internal  Switching  Leakage    Total
+Power Group             Power     Power      Power      Power   (     %)  Attrs
+--------------------------------------------------------------------------------
+clock_network           3.467e-07 3.959e-07 3.042e-06 3.784e-06 (14.36%)  i
+register                3.947e-07 7.527e-07 5.209e-06 6.356e-06 (24.11%)  
+combinational           2.642e-07 1.566e-06 1.439e-05 1.622e-05 (61.53%)  
+sequential                 0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+memory                     0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+io_pad                     0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+black_box                  0.0000    0.0000    0.0000    0.0000 ( 0.00%)  
+
+  Net Switching Power  = 2.715e-06   (10.30%)
+  Cell Internal Power  = 1.006e-06   ( 3.81%)
+  Cell Leakage Power   = 2.264e-05   (85.89%)
+                         ---------
+Total Power            = 2.636e-05  (100.00%)
+
+X Transition Power     =    0.0000
+Glitching Power        =    0.0000
+
+Peak Power             = 2.330e-04
+Peak Time              =   1854740
+
+1

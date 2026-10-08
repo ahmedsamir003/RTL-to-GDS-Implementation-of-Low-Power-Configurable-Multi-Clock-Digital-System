@@ -1,0 +1,198 @@
+Error: Library Compiler executable path is not set. (PT-063)
+
+                                 PrimeTime (R)
+
+               Version O-2018.06-SP1 for linux64 - Jul 19, 2018 
+
+                    Copyright (c) 1988 - 2018 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+#------------------------------------------------------------------------------
+# 1. Output & Directory Setup
+#------------------------------------------------------------------------------
+set report_dir /home/ICer/Labs/System_Final/GLS/pt/report
+/home/ICer/Labs/System_Final/GLS/pt/report
+file mkdir $report_dir
+set Out_report SYS_TOP_pw
+SYS_TOP_pw
+#------------------------------------------------------------------------------
+# 2. App Variables & SDF Settings
+#------------------------------------------------------------------------------
+set_app_var power_enable_analysis true
+Information: Checked out license 'PrimePower' (PT-019)
+true
+set_app_var power_analysis_mode time_based
+time_based
+set power_vcd_time_unit 1ns
+1ns
+# Tcl variables for SDF and VCD mapping (Fixed CMD-104)
+set power_vcd_name_mapping true
+true
+set read_sdf_unresolved_argument_verbose true
+true
+set sdf_enable_no_negedge true
+true
+set read_sdf_process_hierarchical_pins true
+true
+# Enable clock propagation across multiplexers
+set_app_var case_analysis_propagate_through_icg true
+true
+set_app_var timing_enable_preset_clear_arcs true
+true
+#------------------------------------------------------------------------------
+# 3. Target & Link Libraries
+#------------------------------------------------------------------------------
+set search_path [list . /home/ICer/tsmc_fb_cl013g_sc/aci/sc-m/synopsys]
+. /home/ICer/tsmc_fb_cl013g_sc/aci/sc-m/synopsys
+set SSLIB scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db
+scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db
+set FFLIB scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c.db
+scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c.db
+set target_library [list $SSLIB $FFLIB]
+scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c.db
+set link_library   [list * $SSLIB $FFLIB]
+* scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c.db
+#------------------------------------------------------------------------------
+# 4. Read & Link Design Files
+#------------------------------------------------------------------------------
+# Read the Post-PNR Netlist (Matches your SDC and SDF)
+read_verilog /home/ICer/Labs/System_Final/PNR/Export/SYS_TOP.v
+1
+current_design SYS_TOP
+Information: current_design won't return any data before link (DES-071)
+link_design
+Loading verilog file '/home/ICer/Labs/System_Final/PNR/Export/SYS_TOP.v'
+Loading db file '/home/ICer/tsmc_fb_cl013g_sc/aci/sc-m/synopsys/scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db'
+Loading db file '/home/ICer/tsmc_fb_cl013g_sc/aci/sc-m/synopsys/scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c.db'
+Linking design SYS_TOP...
+Information: Removing 44 unneeded designs..... (LNK-034)
+Information: 466 (75.40%) library cells are unused in library scmetro_tsmc_cl013g_rvt_ss_1p08v_125c..... (LNK-045)
+Information: 618 (100.00%) library cells are unused in library scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c..... (LNK-045)
+Information: total 1084 library cells are unused (LNK-046)
+Design 'SYS_TOP' was successfully linked.
+Information: There are 2766 leaf cells, ports, hiers and 3737 nets in the design (LNK-047)
+1
+# Read SDC Constraints
+read_sdc /home/ICer/Labs/System_Final/DFT/sdc/SYS_TOP.sdc
+
+Reading SDC version 2.1...
+1
+1
+# Safely force Functional Mode for DFT Clock Muxes (Fixes SEL-005)
+set test_pins [get_ports -quiet {scan_en test_mode SE scan_mode test_en}]
+{"test_mode", "SE"}
+if {[sizeof_collection $test_pins] > 0} {
+    set_case_analysis 0 $test_pins
+}
+1
+# Read SDF Delays
+read_sdf -analysis_type on_chip_variation /home/ICer/Labs/System_Final/GLS/sim/SYS_TOP.sdf
+Warning: The SDF file is version 3.0. Current SDF-3.0 supported constructs are: REMOVAL, RECREM, RETAIN and CONDELSE. (SDF-026)
+
+****************************************
+Report : read_sdf /home/ICer/Labs/System_Final/GLS/sim/SYS_TOP.sdf
+	-load_delay cell
+	-analysis_type on_chip_variation
+	-min_type sdf_min
+	-max_type sdf_max
+Design : SYS_TOP
+Version: O-2018.06-SP1
+Date   : Thu Oct  8 20:56:59 2026
+****************************************
+
+        0 error(s)
+        Number of annotated cell delay arcs :     18880
+        Number of annotated net delay arcs  :      7298
+        Number of annotated timing checks   :      5811
+        Number of annotated constraints     :      1162
+        TEMPERATURE: 125.00 (min)  125.00 (max)
+        VOLTAGE    : 1.08 (min)  1.08 (max)
+        PROCESS    : 1 (min)  1 (max)
+1
+# Propagate clock tree
+set_propagated_clock [all_clocks]
+1
+#------------------------------------------------------------------------------
+# 5. Read Switching Activity (VCD)
+#------------------------------------------------------------------------------
+read_vcd -strip_path tb_SYS_TOP_basic/UUT          -zero_delay          /home/ICer/Labs/System_Final/GLS/sim/VCD/SYS_TOP.vcd
+
+======================================================================
+Summary:
+Total number of nets = 2833
+Number of annotated nets = 237 (8.37%)
+Total number of leaf cells = 2691
+Number of fully annotated leaf cells = 65 (2.42%)
+======================================================================
+
+Warning: VCD coverage on the design is too small. Power may be underestimated. (PWR-007)
+1
+# Update Power Calculation Graph
+update_power
+Warning: Zero transition time will be used at to pins of annotated arcs. Delays on not annotated delay arcs will be estimated using best available slew.  (PTE-066)
+Warning: Some timing arcs have been disabled for breaking timing loops or because of constant propagation. Use the 'report_disable_timing' command to get the list of these disabled timing arcs. (PTE-003)
+Warning: No clock-gating check is inferred for clock UART_CLK at pins U0_ClkDiv/U34/B and U0_ClkDiv/U34/A of cell U0_ClkDiv/U34. (PTE-060)
+Warning: No clock-gating check is inferred for clock UART_CLK at pins U0_ClkDiv/U34/S0 and U0_ClkDiv/U34/A of cell U0_ClkDiv/U34. (PTE-060)
+Warning: No clock-gating check is inferred for clock UART_CLK at pins U1_ClkDiv/U34/B and U1_ClkDiv/U34/A of cell U1_ClkDiv/U34. (PTE-060)
+Warning: No clock-gating check is inferred for clock UART_CLK at pins U1_ClkDiv/U34/S0 and U1_ClkDiv/U34/A of cell U1_ClkDiv/U34. (PTE-060)
+Information: Zero transition time used at to pin of annotated arcs. Delays on not annotated delay arcs will be estimated using best available slew.  (PTE-054)
+Information: Zero transition time used at to pin of annotated arcs. Delays on not annotated delay arcs will be estimated using best available slew.  (PTE-054)
+Information: Expanding clock 'RX_CLK' to base period of 8681.600 (old period was 271.300, added 62 edges). (PTE-016)
+Information: Expanding clock 'UART_CLK' to base period of 8681.600 (old period was 271.300, added 62 edges). (PTE-016)
+Information: Clock REF_CLK is selected as the reference clock for cycle accurate peak power analysis of the current design. (PWR-280)
+Information: Running time_based power analysis... (PWR-601)
+Information: The waveform options are:
+		File name:	primetime_px.fsdb
+		File format:	fsdb
+		Time interval:	10ns
+		Hierarchical level:	all
+
+Information: Power analysis is running, please wait ...
+
+ Last event time =    60140 ns  Last event time =   120305 ns  Last event time =   180253 ns  Last event time =   240310 ns  Last event time =   300697 ns  Last event time =   361020 ns  Last event time =   420940 ns  Last event time =   481080 ns  Last event time =   541140 ns  Last event time =   601360 ns  Last event time =   661440 ns  Last event time =   721689 ns  Last event time =   781810 ns  Last event time =   841840 ns  Last event time =   901880 ns  Last event time =   961770 ns  Last event time = 1.02179e+06 ns  Last event time = 1.08194e+06 ns  Last event time = 1.14214e+06 ns  Last event time = 1.20223e+06 ns  Last event time = 1.26234e+06 ns  Last event time = 1.32256e+06 ns  Last event time = 1.38275e+06 ns  Last event time = 1.44284e+06 ns  Last event time = 1.50305e+06 ns  Last event time = 1.56025e+06 ns  Last event time = 1.59795e+06 ns  Last event time = 1.63548e+06 ns  Last event time = 1.68087e+06 ns  Last event time = 1.74134e+06 ns  Last event time = 1.80144e+06 ns  Last event time = 1.85745e+06 ns  Last event time = 1.89493e+06 ns  Last event time = 1.93259e+06 ns  Last event time = 1.97902e+06 ns  Last event time = 2.0392e+06 ns  Last event time = 2.0995e+06 ns Information: analysis is done for time window (0ns - 2.14554e+06ns)
+
+Warning: Switching activity for constant net U0_ClkDiv/n69 is reset by SAIF/VCD.  (PSW-208)
+Warning: Switching activity for constant net U0_ClkDiv/n61 is reset by SAIF/VCD.  (PSW-208)
+Warning: Switching activity for constant net U0_ClkDiv/n62 is reset by SAIF/VCD.  (PSW-208)
+Warning: Switching activity for constant net U0_ClkDiv/n63 is reset by SAIF/VCD.  (PSW-208)
+Warning: Switching activity for constant net U0_ClkDiv/n65 is reset by SAIF/VCD.  (PSW-208)
+Warning: Switching activity for constant net U0_ClkDiv/n66 is reset by SAIF/VCD.  (PSW-208)
+Warning: Switching activity for constant net U0_ClkDiv/n67 is reset by SAIF/VCD.  (PSW-208)
+Warning: Switching activity for constant net U1_ClkDiv/n57 is reset by SAIF/VCD.  (PSW-208)
+1
+#------------------------------------------------------------------------------
+# 6. Report Power Breakdown
+#------------------------------------------------------------------------------
+report_power -hierarchy                      > $report_dir/${Out_report}_hierarchy.rpt
+report_power -cell_power -net_power -verbose > $report_dir/${Out_report}_detailed.rpt
+report_power                                 > $report_dir/$Out_report.rpt
+echo "----------------------------------------"
+----------------------------------------
+echo " PrimeTime PX Analysis Completed"
+ PrimeTime PX Analysis Completed
+echo " Reports saved in: $report_dir"
+ Reports saved in: /home/ICer/Labs/System_Final/GLS/pt/report
+echo "----------------------------------------"
+----------------------------------------
+exit
+Information: Defining new variable 'report_dir'. (CMD-041)
+Information: Defining new variable 'sdf_enable_no_negedge'. (CMD-041)
+Information: Defining new variable 'FFLIB'. (CMD-041)
+Information: Defining new variable 'test_pins'. (CMD-041)
+Information: Defining new variable 'power_vcd_name_mapping'. (CMD-041)
+Information: Defining new variable 'Out_report'. (CMD-041)
+Information: Defining new variable 'read_sdf_unresolved_argument_verbose'. (CMD-041)
+Information: Defining new variable 'SSLIB'. (CMD-041)
+Information: Defining new variable 'power_vcd_time_unit'. (CMD-041)
+Information: Defining new variable 'read_sdf_process_hierarchical_pins'. (CMD-041)
+
+Timing updates: 1 (1 implicit, 0 explicit) (0 incremental, 1 full, 0 logical)
+Noise updates: 0 (0 implicit, 0 explicit) (0 incremental, 0 full)
+Maximum memory usage for this session: 890.15 MB
+CPU usage for this session: 3 seconds 
+Elapsed time for this session: 3 seconds
+Diagnostics summary: 1 error, 16 warnings, 23 informationals
+
+Thank you for using pt_shell!
