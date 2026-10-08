@@ -213,5 +213,3 @@ The [physical export folder](./Backend/PNR/Export) contains:
 | [SYS_TOP.gds](./Backend/PNR/Export/SYS_TOP.gds) | Supplied GDSII export artifact |
 
 The shared package does not include the referenced `system.lst`, all mode-specific physical SDC files, the physical LEF/capacitance-table inputs, or the complete saved Encounter database.
-
-The supplied GDSII is **not a self-contained tapeout package**: it contains the `SYS_TOP` structure and references 159 external cell structures, but contains no boundary or path records. A complete geometric stream and library definitions are still needed for a final layout handoff. Independent foundry-rule DRC, LVS, IR-drop, and electromigration signoff are not included.
